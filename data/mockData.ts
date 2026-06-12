@@ -34,6 +34,10 @@ export type Shipment = {
   revenue: number;
   cost: number;
   onTime: boolean;
+  onTimePickup?: boolean;
+  onTimeDelivery?: boolean;
+  carrierName?: string;
+  accessorialAmount?: number;
   exceptionType: string;
   status: "Delivered" | "In Transit" | "Exception";
 };

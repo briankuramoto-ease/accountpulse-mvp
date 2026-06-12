@@ -1,0 +1,76 @@
+customer_name,shipment_id,shipment_date,origin_city,origin_state,destination_city,destination_state,mode,carrier_name,revenue,cost,on_time_pickup,on_time_delivery,exception_reason,accessorial_amount,account_owner
+Acme Foods,AP-1001,2026-01-03,Chicago,IL,Dallas,TX,FTL,Lakefront Logistics,2650,2140,true,true,,0,Maya Chen
+Acme Foods,AP-1002,2026-01-07,Chicago,IL,Dallas,TX,FTL,Lakefront Logistics,2725,2215,true,true,,75,Maya Chen
+Acme Foods,AP-1003,2026-01-12,Atlanta,GA,Orlando,FL,FTL,BlueLine Transport,1825,1580,true,false,receiver delay,125,Maya Chen
+Acme Foods,AP-1004,2026-01-18,Atlanta,GA,Orlando,FL,FTL,BlueLine Transport,1890,1645,true,true,,0,Maya Chen
+Acme Foods,AP-1005,2026-01-24,Columbus,OH,Charlotte,NC,LTL,Summit Freight,980,910,true,true,,45,Maya Chen
+Acme Foods,AP-1006,2026-02-02,Chicago,IL,Dallas,TX,FTL,Lakefront Logistics,2680,2185,false,true,missed pickup,150,Maya Chen
+Acme Foods,AP-1007,2026-02-09,Atlanta,GA,Orlando,FL,FTL,BlueLine Transport,1840,1765,true,false,appointment delay,90,Maya Chen
+Acme Foods,AP-1008,2026-02-16,Columbus,OH,Charlotte,NC,LTL,Summit Freight,1010,940,true,true,,0,Maya Chen
+Acme Foods,AP-1009,2026-02-21,Chicago,IL,Dallas,TX,FTL,IronHorse Carriers,2595,2365,true,true,,0,Maya Chen
+Acme Foods,AP-1010,2026-03-02,Atlanta,GA,Orlando,FL,FTL,BlueLine Transport,1865,1615,true,true,,0,Maya Chen
+Acme Foods,AP-1011,2026-03-11,Chicago,IL,Dallas,TX,FTL,Lakefront Logistics,2710,2240,true,false,detention,240,Maya Chen
+Acme Foods,AP-1012,2026-03-19,Columbus,OH,Charlotte,NC,LTL,Summit Freight,995,1035,true,true,,30,Maya Chen
+Acme Foods,AP-1013,2026-04-04,Atlanta,GA,Orlando,FL,FTL,BlueLine Transport,1905,1650,true,true,,0,Maya Chen
+Acme Foods,AP-1014,2026-04-13,Chicago,IL,Dallas,TX,FTL,Lakefront Logistics,2740,2190,true,true,,60,Maya Chen
+Acme Foods,AP-1015,2026-04-26,Columbus,OH,Charlotte,NC,LTL,Summit Freight,1025,980,false,false,weather,85,Maya Chen
+Northstar Retail Group,AP-2001,2026-01-04,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2150,1785,true,true,,0,Jordan Price
+Northstar Retail Group,AP-2002,2026-01-09,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2195,1810,true,true,,0,Jordan Price
+Northstar Retail Group,AP-2003,2026-01-15,Savannah,GA,Nashville,TN,Drayage,Keystone Express,1425,1280,true,false,appointment delay,110,Jordan Price
+Northstar Retail Group,AP-2004,2026-01-23,Newark,NJ,Boston,MA,LTL,Summit Freight,1180,1095,true,true,,25,Jordan Price
+Northstar Retail Group,AP-2005,2026-01-30,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2170,1840,true,true,,0,Jordan Price
+Northstar Retail Group,AP-2006,2026-02-05,Savannah,GA,Nashville,TN,Drayage,Keystone Express,1460,1395,false,true,carrier capacity,175,Jordan Price
+Northstar Retail Group,AP-2007,2026-02-12,Newark,NJ,Boston,MA,LTL,Summit Freight,1195,1120,true,false,receiver delay,90,Jordan Price
+Northstar Retail Group,AP-2008,2026-02-20,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2210,1790,true,true,,0,Jordan Price
+Northstar Retail Group,AP-2009,2026-02-28,Savannah,GA,Nashville,TN,Drayage,Keystone Express,1445,1515,true,false,detention,210,Jordan Price
+Northstar Retail Group,AP-2010,2026-03-07,Newark,NJ,Boston,MA,LTL,Summit Freight,1210,1135,true,true,,0,Jordan Price
+Northstar Retail Group,AP-2011,2026-03-16,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2240,1850,true,true,,40,Jordan Price
+Northstar Retail Group,AP-2012,2026-03-25,Savannah,GA,Nashville,TN,Drayage,Keystone Express,1490,1360,true,true,,0,Jordan Price
+Northstar Retail Group,AP-2013,2026-04-05,Newark,NJ,Boston,MA,LTL,Summit Freight,1205,1245,false,false,missed pickup,65,Jordan Price
+Northstar Retail Group,AP-2014,2026-04-14,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2265,1875,true,true,,0,Jordan Price
+Northstar Retail Group,AP-2015,2026-04-27,Savannah,GA,Nashville,TN,Drayage,Keystone Express,1515,1405,true,false,weather,95,Jordan Price
+Ironwood Manufacturing,AP-3001,2026-01-05,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2380,2025,true,true,,0,Priya Shah
+Ironwood Manufacturing,AP-3002,2026-01-11,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2410,2075,true,true,,0,Priya Shah
+Ironwood Manufacturing,AP-3003,2026-01-19,Denver,CO,Salt Lake City,UT,FTL,BlueLine Transport,2050,1815,true,true,,50,Priya Shah
+Ironwood Manufacturing,AP-3004,2026-01-27,Chicago,IL,Dallas,TX,FTL,Lakefront Logistics,2760,2520,true,false,detention,300,Priya Shah
+Ironwood Manufacturing,AP-3005,2026-02-03,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2395,2110,false,false,missed pickup,120,Priya Shah
+Ironwood Manufacturing,AP-3006,2026-02-10,Denver,CO,Salt Lake City,UT,FTL,BlueLine Transport,2090,1880,true,true,,0,Priya Shah
+Ironwood Manufacturing,AP-3007,2026-02-18,Chicago,IL,Dallas,TX,FTL,Lakefront Logistics,2795,2590,true,true,,0,Priya Shah
+Ironwood Manufacturing,AP-3008,2026-02-26,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2440,2165,true,false,carrier capacity,180,Priya Shah
+Ironwood Manufacturing,AP-3009,2026-03-06,Denver,CO,Salt Lake City,UT,FTL,BlueLine Transport,2115,1995,true,true,,0,Priya Shah
+Ironwood Manufacturing,AP-3010,2026-03-13,Chicago,IL,Dallas,TX,FTL,Lakefront Logistics,2820,2460,true,true,,0,Priya Shah
+Ironwood Manufacturing,AP-3011,2026-03-22,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2475,2285,true,false,appointment delay,90,Priya Shah
+Ironwood Manufacturing,AP-3012,2026-03-30,Denver,CO,Salt Lake City,UT,FTL,BlueLine Transport,2140,2210,true,false,weather,160,Priya Shah
+Ironwood Manufacturing,AP-3013,2026-04-08,Chicago,IL,Dallas,TX,FTL,Lakefront Logistics,2865,2495,true,true,,0,Priya Shah
+Ironwood Manufacturing,AP-3014,2026-04-17,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2490,2195,true,true,,0,Priya Shah
+Ironwood Manufacturing,AP-3015,2026-04-29,Denver,CO,Salt Lake City,UT,FTL,BlueLine Transport,2165,2050,false,true,receiver delay,115,Priya Shah
+Blue Ridge Beverage,AP-4001,2026-01-06,Atlanta,GA,Orlando,FL,FTL,BlueLine Transport,1760,1425,true,true,,0,Evan Miller
+Blue Ridge Beverage,AP-4002,2026-01-13,Savannah,GA,Nashville,TN,Drayage,Keystone Express,1395,1265,true,true,,0,Evan Miller
+Blue Ridge Beverage,AP-4003,2026-01-21,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2325,1990,true,false,detention,225,Evan Miller
+Blue Ridge Beverage,AP-4004,2026-01-29,Atlanta,GA,Orlando,FL,FTL,BlueLine Transport,1785,1505,true,true,,0,Evan Miller
+Blue Ridge Beverage,AP-4005,2026-02-06,Savannah,GA,Nashville,TN,Drayage,Keystone Express,1410,1335,false,false,carrier capacity,135,Evan Miller
+Blue Ridge Beverage,AP-4006,2026-02-14,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2350,2015,true,true,,0,Evan Miller
+Blue Ridge Beverage,AP-4007,2026-02-22,Atlanta,GA,Orlando,FL,FTL,BlueLine Transport,1810,1665,true,false,receiver delay,85,Evan Miller
+Blue Ridge Beverage,AP-4008,2026-03-03,Savannah,GA,Nashville,TN,Drayage,Keystone Express,1435,1360,true,true,,0,Evan Miller
+Blue Ridge Beverage,AP-4009,2026-03-12,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2375,2075,true,true,,0,Evan Miller
+Blue Ridge Beverage,AP-4010,2026-03-20,Atlanta,GA,Orlando,FL,FTL,BlueLine Transport,1830,1705,false,false,missed pickup,110,Evan Miller
+Blue Ridge Beverage,AP-4011,2026-03-28,Savannah,GA,Nashville,TN,Drayage,Keystone Express,1450,1305,true,true,,0,Evan Miller
+Blue Ridge Beverage,AP-4012,2026-04-07,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2410,2110,true,false,weather,150,Evan Miller
+Blue Ridge Beverage,AP-4013,2026-04-16,Atlanta,GA,Orlando,FL,FTL,BlueLine Transport,1855,1495,true,true,,0,Evan Miller
+Blue Ridge Beverage,AP-4014,2026-04-24,Savannah,GA,Nashville,TN,Drayage,Keystone Express,1475,1540,true,false,appointment delay,190,Evan Miller
+Blue Ridge Beverage,AP-4015,2026-04-30,Memphis,TN,Kansas City,MO,FTL,IronHorse Carriers,2435,2090,true,true,,0,Evan Miller
+Keystone Medical Products,AP-5001,2026-01-08,Newark,NJ,Boston,MA,LTL,Keystone Express,1325,1075,true,true,,0,Luis Romero
+Keystone Medical Products,AP-5002,2026-01-16,Denver,CO,Salt Lake City,UT,FTL,BlueLine Transport,2180,1845,true,true,,0,Luis Romero
+Keystone Medical Products,AP-5003,2026-01-25,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2295,1920,true,false,weather,140,Luis Romero
+Keystone Medical Products,AP-5004,2026-02-04,Newark,NJ,Boston,MA,LTL,Keystone Express,1340,1125,true,true,,0,Luis Romero
+Keystone Medical Products,AP-5005,2026-02-13,Denver,CO,Salt Lake City,UT,FTL,BlueLine Transport,2210,2025,false,false,missed pickup,130,Luis Romero
+Keystone Medical Products,AP-5006,2026-02-23,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2325,1935,true,true,,0,Luis Romero
+Keystone Medical Products,AP-5007,2026-03-04,Newark,NJ,Boston,MA,LTL,Keystone Express,1365,1245,true,false,receiver delay,75,Luis Romero
+Keystone Medical Products,AP-5008,2026-03-14,Denver,CO,Salt Lake City,UT,FTL,BlueLine Transport,2235,1875,true,true,,0,Luis Romero
+Keystone Medical Products,AP-5009,2026-03-23,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2350,2015,true,false,detention,260,Luis Romero
+Keystone Medical Products,AP-5010,2026-04-02,Newark,NJ,Boston,MA,LTL,Keystone Express,1380,1130,true,true,,0,Luis Romero
+Keystone Medical Products,AP-5011,2026-04-11,Denver,CO,Salt Lake City,UT,FTL,BlueLine Transport,2260,1910,true,true,,0,Luis Romero
+Keystone Medical Products,AP-5012,2026-04-19,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2385,2150,false,false,carrier capacity,210,Luis Romero
+Keystone Medical Products,AP-5013,2026-04-23,Newark,NJ,Boston,MA,LTL,Keystone Express,1395,1205,true,true,,0,Luis Romero
+Keystone Medical Products,AP-5014,2026-04-27,Denver,CO,Salt Lake City,UT,FTL,BlueLine Transport,2280,1965,true,false,appointment delay,95,Luis Romero
+Keystone Medical Products,AP-5015,2026-04-30,Los Angeles,CA,Phoenix,AZ,Intermodal,Piedmont Intermodal,2410,2035,true,true,,0,Luis Romero

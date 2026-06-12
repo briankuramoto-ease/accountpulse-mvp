@@ -107,7 +107,7 @@ export function calculateExceptionRate(shipments: Shipment[]) {
 
 export function calculateOnTimeDelivery(shipments: Shipment[]) {
   if (!shipments.length) return 0;
-  const onTime = shipments.filter((shipment) => shipment.onTime).length;
+  const onTime = shipments.filter((shipment) => shipment.onTimeDelivery ?? shipment.onTime).length;
   return onTime / shipments.length;
 }
 
