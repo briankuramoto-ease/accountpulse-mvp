@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import Papa from "papaparse";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   buildDashboardDataFromCsv,
   CsvPreviewRow,
   requiredCsvColumns,
-  sampleCsvRows,
   UPLOADED_DATA_KEY,
   validateCsvRows
 } from "@/lib/csvUpload";
@@ -19,8 +18,6 @@ export function CsvUploadWorkspace() {
   const [errors, setErrors] = useState<string[]>([]);
   const [missingColumns, setMissingColumns] = useState<string[]>([]);
   const [applied, setApplied] = useState(false);
-
-  const sampleCsv = useMemo(() => Papa.unparse(sampleCsvRows), []);
 
   const handleFile = (file: File | undefined) => {
     setApplied(false);
@@ -71,8 +68,8 @@ export function CsvUploadWorkspace() {
             </p>
           </div>
           <a
-            href={`data:text/csv;charset=utf-8,${encodeURIComponent(sampleCsv)}`}
-            download="accountpulse_sample_shipments.csv"
+            href="/sample-shipments.csv"
+            download="sample-shipments.csv"
             className="rounded-md border border-ink/15 bg-white px-4 py-2 text-sm font-semibold text-ink hover:bg-paper"
           >
             Download sample CSV
@@ -170,8 +167,8 @@ export function CsvUploadWorkspace() {
                   </td>
                   <td className="px-5 py-4">{row.mode}</td>
                   <td className="px-5 py-4">{row.carrier_name}</td>
-                  <td className="px-5 py-4">{formatCurrency(row.total_revenue)}</td>
-                  <td className="px-5 py-4">{formatCurrency(row.total_revenue - row.margin)}</td>
+                  <td className="px-5 py-4">{formatCurrency(row.parsed_revenue)}</td>
+                  <td className="px-5 py-4">{formatCurrency(row.parsed_cost)}</td>
                   <td className="px-5 py-4">{formatCurrency(row.margin)}</td>
                   <td className="px-5 py-4">{formatPercent(row.margin_pct)}</td>
                   <td className="px-5 py-4">{row.exception_reason || "None"}</td>

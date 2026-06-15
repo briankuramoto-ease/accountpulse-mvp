@@ -6,19 +6,19 @@ import { ActionItemsPanel } from "@/components/ActionItemsPanel";
 import { ExceptionBreakdown } from "@/components/ExceptionBreakdown";
 import { LanePerformanceTable } from "@/components/LanePerformanceTable";
 import { PortfolioSummaryCards } from "@/components/PortfolioSummaryCards";
+import { PortfolioIntelligencePanel } from "@/components/PortfolioIntelligencePanel";
 import { RevenueMarginChart } from "@/components/RevenueMarginChart";
 import { ServicePerformanceChart } from "@/components/ServicePerformanceChart";
-import { actionItems as mockActionItems, customers as mockCustomers, lanes as mockLanes, shipments as mockShipments } from "@/data/mockData";
-import { UploadedDashboardData, UPLOADED_DATA_KEY } from "@/lib/csvUpload";
+import { UPLOADED_DATA_KEY } from "@/lib/csvUpload";
+import { mockAccountPulseData, readActiveAccountPulseData, ActiveAccountPulseData } from "@/lib/browserData";
 import { identifyAtRiskAccounts, identifyExpansionCandidates, identifyMarginLeakageLanes } from "@/lib/metrics";
 
 export function DashboardClient() {
-  const [uploadedData, setUploadedData] = useState<UploadedDashboardData | null>(null);
+  const [activeData, setActiveData] = useState<ActiveAccountPulseData>(mockAccountPulseData);
 
   useEffect(() => {
     const loadUploadedData = () => {
-      const stored = window.localStorage.getItem(UPLOADED_DATA_KEY);
-      setUploadedData(stored ? (JSON.parse(stored) as UploadedDashboardData) : null);
+      setActiveData(readActiveAccountPulseData());
     };
 
     loadUploadedData();
@@ -31,14 +31,17 @@ export function DashboardClient() {
     };
   }, []);
 
-  const customers = uploadedData?.customers ?? mockCustomers;
-  const lanes = uploadedData?.lanes ?? mockLanes;
-  const shipments = uploadedData?.shipments ?? mockShipments;
-  const actionItems = uploadedData?.actionItems ?? mockActionItems;
+  const customers = activeData.customers;
+  const lanes = activeData.lanes;
+  const shipments = activeData.shipments;
+  const actionItems = activeData.actionItems;
   const atRisk = identifyAtRiskAccounts(customers, shipments, actionItems);
   const expansion = identifyExpansionCandidates(customers, lanes, shipments);
   const leakage = identifyMarginLeakageLanes(lanes);
-  const modeLabel = uploadedData ? `Uploaded portfolio: ${uploadedData.customers.length} customers, ${uploadedData.lanes.length} lanes, ${uploadedData.rowCount} rows` : "Mock portfolio: 8 customers, 40 lanes, 500 shipments";
+  const modeLabel =
+    activeData.source === "uploaded"
+      ? `Uploaded portfolio: ${activeData.customers.length} customers, ${activeData.lanes.length} lanes, ${activeData.rowCount} rows`
+      : "Mock portfolio: 8 customers, 40 lanes, 500 shipments";
 
   const clearUpload = () => {
     window.localStorage.removeItem(UPLOADED_DATA_KEY);
@@ -58,7 +61,7 @@ export function DashboardClient() {
         </div>
         <div className="flex flex-col gap-2 rounded-lg border border-ink/10 bg-white px-4 py-3 text-sm text-steel shadow-soft">
           <span>{modeLabel}</span>
-          {uploadedData ? (
+          {activeData.source === "uploaded" ? (
             <button type="button" onClick={clearUpload} className="self-start rounded-md border border-ink/15 px-3 py-1 text-xs font-semibold text-ink hover:bg-paper">
               Return to demo mode
             </button>
@@ -68,6 +71,7 @@ export function DashboardClient() {
 
       <div className="space-y-6">
         <PortfolioSummaryCards customers={customers} lanes={lanes} shipments={shipments} actionItems={actionItems} />
+        <PortfolioIntelligencePanel customers={customers} lanes={lanes} shipments={shipments} />
         <div className="grid gap-6 xl:grid-cols-[1.25fr_0.85fr]">
           <RevenueMarginChart shipments={shipments} />
           <ServicePerformanceChart shipments={shipments} />

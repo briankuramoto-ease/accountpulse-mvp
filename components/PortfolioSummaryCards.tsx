@@ -34,7 +34,7 @@ export function PortfolioSummaryCards({ customers, lanes, shipments, actionItems
   const expansionCandidates = identifyExpansionCandidates(customers, lanes, shipments).length;
 
   const cards = [
-    { label: "Managed revenue", value: `$${formatCompact(revenue)}`, detail: "Across 8 active shipper accounts" },
+    { label: "Managed revenue", value: `$${formatCompact(revenue)}`, detail: `Across ${customers.length} active shipper accounts` },
     { label: "Portfolio health", value: Math.round(averageHealth).toString(), detail: `${atRisk} accounts need intervention` },
     { label: "Expansion score", value: Math.round(averageExpansion).toString(), detail: `${expansionCandidates} accounts showing growth fit` },
     { label: "On-time delivery", value: formatPercent(calculateOnTimeDelivery(shipments)), detail: "Rolling six-month shipment base" },

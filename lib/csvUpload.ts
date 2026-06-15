@@ -26,9 +26,47 @@ export type RequiredCsvColumn = (typeof requiredCsvColumns)[number];
 export type CsvShipmentRow = Record<RequiredCsvColumn, string>;
 
 export type CsvPreviewRow = CsvShipmentRow & {
-  total_revenue: number;
+  parsed_revenue: number;
+  parsed_cost: number;
+  parsed_accessorial_amount: number;
   margin: number;
   margin_pct: number;
+};
+
+export type RankedMetric = {
+  name: string;
+  value: number;
+  detail?: string;
+};
+
+export type MonthlyTrendPoint = {
+  month: string;
+  revenue: number;
+  margin: number;
+};
+
+export type PortfolioAggregates = {
+  totalRevenue: number;
+  totalCost: number;
+  totalMargin: number;
+  marginPct: number;
+  shipmentCount: number;
+  onTimePickupPct: number;
+  onTimeDeliveryPct: number;
+  exceptionCount: number;
+  accessorialTotal: number;
+  accessorialPct: number;
+  topCustomersByRevenue: RankedMetric[];
+  topLanesByMargin: RankedMetric[];
+  topCarriersByShipmentCount: RankedMetric[];
+  exceptionsByReason: RankedMetric[];
+  monthlyTrend: MonthlyTrendPoint[];
+};
+
+export type RuleBasedInsight = {
+  title: string;
+  description: string;
+  severity: "High" | "Medium" | "Low";
 };
 
 export type CsvValidationResult = {
@@ -86,9 +124,8 @@ export function validateCsvRows(rawRows: Record<string, unknown>[]): CsvValidati
       const revenue = currencyNumber(csvRow.revenue);
       const cost = currencyNumber(csvRow.cost);
       const accessorial = currencyNumber(csvRow.accessorial_amount || "0");
-      const totalRevenue = revenue + accessorial;
-      const margin = totalRevenue - cost;
-      const marginPct = totalRevenue ? margin / totalRevenue : 0;
+      const margin = revenue - cost;
+      const marginPct = revenue ? margin / revenue : 0;
 
       if (!csvRow.customer_name) errors.push(`Row ${index + 2}: customer_name is required.`);
       if (!csvRow.shipment_id) errors.push(`Row ${index + 2}: shipment_id is required.`);
@@ -99,7 +136,9 @@ export function validateCsvRows(rawRows: Record<string, unknown>[]): CsvValidati
 
       return {
         ...csvRow,
-        total_revenue: totalRevenue,
+        parsed_revenue: revenue,
+        parsed_cost: cost,
+        parsed_accessorial_amount: accessorial,
         margin,
         margin_pct: marginPct
       };
@@ -119,8 +158,8 @@ export function buildDashboardDataFromCsv(rows: CsvPreviewRow[]): UploadedDashbo
     const customerId = `u-c-${slug(row.customer_name) || index}`;
     const laneKey = `${customerId}|${row.origin_city}, ${row.origin_state}|${row.destination_city}, ${row.destination_state}|${row.mode}`;
     const laneId = `u-l-${slug(laneKey)}`;
-    const revenue = currencyNumber(row.revenue) + currencyNumber(row.accessorial_amount || "0");
-    const cost = currencyNumber(row.cost);
+    const revenue = row.parsed_revenue;
+    const cost = row.parsed_cost;
 
     if (!customerMap.has(customerId)) {
       customerMap.set(customerId, {
@@ -166,6 +205,10 @@ export function buildDashboardDataFromCsv(rows: CsvPreviewRow[]): UploadedDashbo
       revenue,
       cost,
       onTime: booleanValue(row.on_time_pickup) && booleanValue(row.on_time_delivery),
+      onTimePickup: booleanValue(row.on_time_pickup),
+      onTimeDelivery: booleanValue(row.on_time_delivery),
+      carrierName: row.carrier_name || "Unknown carrier",
+      accessorialAmount: row.parsed_accessorial_amount,
       exceptionType: normalizeException(row.exception_reason),
       status: normalizeException(row.exception_reason) === "None" ? "Delivered" : "Exception"
     };
@@ -211,9 +254,137 @@ export function buildDashboardDataFromCsv(rows: CsvPreviewRow[]): UploadedDashbo
   };
 }
 
+function addMetric(map: Map<string, number>, key: string, value: number) {
+  map.set(key, (map.get(key) ?? 0) + value);
+}
+
+function rankedMetrics(map: Map<string, number>, limit = 5): RankedMetric[] {
+  return Array.from(map.entries())
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, limit);
+}
+
+export function aggregatePortfolioData(customers: Customer[], lanes: Lane[], shipments: Shipment[]): PortfolioAggregates {
+  const totalRevenue = shipments.reduce((sum, shipment) => sum + shipment.revenue, 0);
+  const totalCost = shipments.reduce((sum, shipment) => sum + shipment.cost, 0);
+  const totalMargin = totalRevenue - totalCost;
+  const accessorialTotal = shipments.reduce((sum, shipment) => sum + (shipment.accessorialAmount ?? 0), 0);
+  const exceptionShipments = shipments.filter((shipment) => shipment.exceptionType !== "None");
+  const pickupKnown = shipments.filter((shipment) => shipment.onTimePickup !== undefined);
+  const deliveryKnown = shipments.filter((shipment) => shipment.onTimeDelivery !== undefined);
+  const customerRevenue = new Map<string, number>();
+  const laneMargin = new Map<string, number>();
+  const carrierShipments = new Map<string, number>();
+  const exceptionReasons = new Map<string, number>();
+  const monthly = new Map<string, { revenue: number; margin: number }>();
+
+  shipments.forEach((shipment) => {
+    const customer = customers.find((item) => item.id === shipment.accountId);
+    const lane = lanes.find((item) => item.id === shipment.laneId);
+    const margin = shipment.revenue - shipment.cost;
+    addMetric(customerRevenue, customer?.name ?? shipment.accountId, shipment.revenue);
+    addMetric(laneMargin, lane ? `${lane.origin} to ${lane.destination}` : shipment.laneId, margin);
+    addMetric(carrierShipments, shipment.carrierName ?? "Unassigned carrier", 1);
+    if (shipment.exceptionType !== "None") addMetric(exceptionReasons, shipment.exceptionType, 1);
+
+    const month = shipment.shipDate.slice(0, 7);
+    const current = monthly.get(month) ?? { revenue: 0, margin: 0 };
+    monthly.set(month, {
+      revenue: current.revenue + shipment.revenue,
+      margin: current.margin + margin
+    });
+  });
+
+  return {
+    totalRevenue,
+    totalCost,
+    totalMargin,
+    marginPct: totalRevenue ? totalMargin / totalRevenue : 0,
+    shipmentCount: shipments.length,
+    onTimePickupPct: pickupKnown.length
+      ? pickupKnown.filter((shipment) => shipment.onTimePickup).length / pickupKnown.length
+      : shipments.filter((shipment) => shipment.onTime).length / Math.max(shipments.length, 1),
+    onTimeDeliveryPct: deliveryKnown.length
+      ? deliveryKnown.filter((shipment) => shipment.onTimeDelivery).length / deliveryKnown.length
+      : shipments.filter((shipment) => shipment.onTime).length / Math.max(shipments.length, 1),
+    exceptionCount: exceptionShipments.length,
+    accessorialTotal,
+    accessorialPct: totalRevenue ? accessorialTotal / totalRevenue : 0,
+    topCustomersByRevenue: rankedMetrics(customerRevenue),
+    topLanesByMargin: rankedMetrics(laneMargin),
+    topCarriersByShipmentCount: rankedMetrics(carrierShipments),
+    exceptionsByReason: rankedMetrics(exceptionReasons),
+    monthlyTrend: Array.from(monthly.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, value]) => ({ month, revenue: value.revenue, margin: value.margin }))
+  };
+}
+
+export function generateRuleBasedInsights(customers: Customer[], lanes: Lane[], shipments: Shipment[]): RuleBasedInsight[] {
+  const aggregates = aggregatePortfolioData(customers, lanes, shipments);
+  const insights: RuleBasedInsight[] = [];
+
+  if (aggregates.marginPct < 0.12) {
+    insights.push({
+      title: "Margin pressure",
+      description: `Portfolio margin is ${(aggregates.marginPct * 100).toFixed(1)}%, below the 12% executive watch threshold.`,
+      severity: "High"
+    });
+  }
+
+  if (aggregates.onTimeDeliveryPct && aggregates.onTimeDeliveryPct < 0.92) {
+    insights.push({
+      title: "Service risk",
+      description: `On-time delivery is ${(aggregates.onTimeDeliveryPct * 100).toFixed(1)}%, below the 92% customer confidence threshold.`,
+      severity: "High"
+    });
+  }
+
+  if (aggregates.accessorialPct > 0.05) {
+    insights.push({
+      title: "Accessorial leakage",
+      description: `Accessorials equal ${(aggregates.accessorialPct * 100).toFixed(1)}% of revenue, above the 5% watch line.`,
+      severity: "Medium"
+    });
+  }
+
+  const exceptionCarrierCounts = new Map<string, number>();
+  shipments
+    .filter((shipment) => shipment.exceptionType !== "None")
+    .forEach((shipment) => addMetric(exceptionCarrierCounts, shipment.carrierName ?? "Unassigned carrier", 1));
+  const topExceptionCarrier = rankedMetrics(exceptionCarrierCounts, 1)[0];
+  if (topExceptionCarrier && aggregates.exceptionCount && topExceptionCarrier.value / aggregates.exceptionCount >= 0.5) {
+    insights.push({
+      title: "Carrier concentration risk",
+      description: `${topExceptionCarrier.name} owns ${topExceptionCarrier.value} of ${aggregates.exceptionCount} exceptions.`,
+      severity: "Medium"
+    });
+  }
+
+  const negativeLane = lanes.find((lane) => lane.margin < 0);
+  if (negativeLane) {
+    insights.push({
+      title: "Lane-level profitability issue",
+      description: `${negativeLane.origin} to ${negativeLane.destination} is running at ${(negativeLane.margin * 100).toFixed(1)}% margin.`,
+      severity: "High"
+    });
+  }
+
+  if (!insights.length) {
+    insights.push({
+      title: "No critical rule-based flags",
+      description: "Revenue, service, accessorials, carrier concentration, and lane profitability are within the current demo thresholds.",
+      severity: "Low"
+    });
+  }
+
+  return insights;
+}
+
 export const sampleCsvRows: CsvShipmentRow[] = [
   {
-    customer_name: "Northstar Foods",
+    customer_name: "Acme Foods",
     shipment_id: "CSV-1001",
     shipment_date: "2026-06-01",
     origin_city: "Chicago",
@@ -227,11 +398,11 @@ export const sampleCsvRows: CsvShipmentRow[] = [
     on_time_pickup: "true",
     on_time_delivery: "true",
     exception_reason: "",
-    accessorial_amount: "125",
+    accessorial_amount: "175",
     account_owner: "Maya Chen"
   },
   {
-    customer_name: "Northstar Foods",
+    customer_name: "Acme Foods",
     shipment_id: "CSV-1002",
     shipment_date: "2026-06-05",
     origin_city: "Columbus",
@@ -241,7 +412,7 @@ export const sampleCsvRows: CsvShipmentRow[] = [
     mode: "LTL",
     carrier_name: "Summit Freight",
     revenue: "1380",
-    cost: "1190",
+    cost: "1295",
     on_time_pickup: "true",
     on_time_delivery: "false",
     exception_reason: "Delivery Delay",
@@ -249,7 +420,7 @@ export const sampleCsvRows: CsvShipmentRow[] = [
     account_owner: "Maya Chen"
   },
   {
-    customer_name: "Everline Retail Group",
+    customer_name: "Northstar Retail Group",
     shipment_id: "CSV-2001",
     shipment_date: "2026-06-08",
     origin_city: "Atlanta",
@@ -263,7 +434,25 @@ export const sampleCsvRows: CsvShipmentRow[] = [
     on_time_pickup: "true",
     on_time_delivery: "true",
     exception_reason: "",
-    accessorial_amount: "75",
+    accessorial_amount: "260",
     account_owner: "Jordan Price"
+  },
+  {
+    customer_name: "Ironwood Manufacturing",
+    shipment_id: "CSV-3001",
+    shipment_date: "2026-06-11",
+    origin_city: "Memphis",
+    origin_state: "TN",
+    destination_city: "Kansas City",
+    destination_state: "MO",
+    mode: "FTL",
+    carrier_name: "Summit Freight",
+    revenue: "2100",
+    cost: "2245",
+    on_time_pickup: "false",
+    on_time_delivery: "false",
+    exception_reason: "Pickup Delay",
+    accessorial_amount: "40",
+    account_owner: "Priya Shah"
   }
 ];
